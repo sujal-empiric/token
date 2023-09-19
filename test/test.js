@@ -1,25 +1,30 @@
 const { ethers } = require("ethers");
 const TokenBuild = require("../build/contracts/Token.json");
 const IUniswapV2Router02Build = require("../build/contracts/IUniswapV2Router02.json");
+const IERC20Build = require("../build/contracts/IERC20.json");
 
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
 const wallet = new ethers.Wallet(
-  "0x6fbbf2b57818e2b6d8783a5f4e67c402ff85f1e702993532ee2f942c51bfea76",
+  "0xbffe2dc5bf6967526467e2376b204dc9945ccc071c96afe71c201b5803b755be",
   provider
 );
 
 const wallet2 = new ethers.Wallet(
-  "0x1bc22fab444ffc692b784fdc9c56b3bd6b5f09c7900718eb8ede7e47f69f2ee9",
+  "0x8419f9f266176695adab6b0df6e9b80a7c269cd44a8920bd89761fe8603cf702",
   provider
 );
 
 async function main() {
   const UniswapV2Router02 = new ethers.Contract(
-    "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+    "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     IUniswapV2Router02Build.abi,
     wallet
   );
-
+  const WETH = new ethers.Contract(
+    await UniswapV2Router02.WETH(),
+    IERC20Build.abi,
+    wallet
+  );
   const TokenFactory = new ethers.ContractFactory(
     TokenBuild.abi,
     TokenBuild.bytecode,
@@ -127,6 +132,20 @@ async function main() {
 
   console.log("Selling token");
   console.log(
+    "pair",
+    ethers.formatUnits(
+      await token.balanceOf(await token.liquidityPairAddress()),
+      await token.decimals()
+    )
+  );
+  console.log(
+    "pair weth",
+    ethers.formatUnits(
+      await WETH.balanceOf(await token.liquidityPairAddress()),
+      await token.decimals()
+    )
+  );
+  console.log(
     "wallet",
     ethers.formatUnits(
       await token.balanceOf(wallet.address),
@@ -153,7 +172,7 @@ async function main() {
         .connect(wallet2)
         .approve(
           await UniswapV2Router02.getAddress(),
-          ethers.parseEther("50000")
+          ethers.parseEther("10000")
         )
     ).wait()
   );
@@ -162,7 +181,7 @@ async function main() {
 
   console.log(
     await (
-      await UniswapV2Router02.connect(wallet2).swapExactTokensForETH(
+      await UniswapV2Router02.connect(wallet2).swapExactTokensForETHSupportingFeeOnTransferTokens(
         await token.allowance(
           wallet2.address,
           await UniswapV2Router02.getAddress()

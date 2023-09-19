@@ -31,7 +31,7 @@ contract Token is ERC20("DEZ", "$DEZ"), Ownable {
         taxAddress = 0xbacf5fEAAB46dFe77f6c97ba0ff8aAfBc73753f6;
 
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(
-            0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff
+            0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
         );
 
         liquidityPairAddress = IUniswapV2Factory(_uniswapV2Router.factory())
@@ -161,7 +161,7 @@ contract Token is ERC20("DEZ", "$DEZ"), Ownable {
 
         if (
             from == liquidityPairAddress &&
-            to != 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff
+            to != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
         ) {
             uint256 taxAmount = amount.mul(buyTax).div(100);
             require(taxAmount < amount, "FROM: TAX AMOUNT IS MORE THEN AMOUNT");
@@ -173,7 +173,7 @@ contract Token is ERC20("DEZ", "$DEZ"), Ownable {
             }
         } else if (
             to == liquidityPairAddress &&
-            to != 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff
+            to != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
         ) {
             uint256 taxAmount = amount.mul(sellTax).div(100);
             require(taxAmount < amount, "TO: TAX AMOUNT IS MORE THEN AMOUNT");
